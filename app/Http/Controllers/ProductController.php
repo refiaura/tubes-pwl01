@@ -59,8 +59,18 @@ class ProductController extends Controller
 
     public function destroy($id)
     {
-        $product = Product::findOrFail($id);
-        $product->delete();
-        return response(null, 204);
+        // Cari Products berdasarkan ID
+        $products = Product::find($id);
+
+        // Jika Products tidak ditemukan, kembalikan respons error
+        if (!$products) {
+            return redirect()->route('products.index')->with('error', 'Products not found.');
+        }
+
+        // Hapus Products
+        $products->delete();
+
+        // Redirect ke halaman Productses.index dengan pesan sukses
+        return redirect()->route('products.index')->with('success', 'Products deleted successfully.');
     }
 }

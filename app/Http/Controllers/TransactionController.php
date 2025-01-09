@@ -95,24 +95,116 @@ class TransactionController extends Controller
         return view('transactions.show', compact('transaction'));
     }
 
+    public function edit($id)
+    {
+        // Ambil transaksi beserta detailnya
+        $transaction = Transaction::with('transactionDetails')->findOrFail($id);
+
+        // Data lain yang mungkin dibutuhkan untuk form
+        $branches = Branches::all();
+        $users = User::all();
+        $products = Product::all();
+
+        return view('transactions.edit', compact('transaction', 'branches', 'users', 'products'));
+    }
+
+    /**
+     * Memperbarui transaksi beserta detailnya.
+     */
     public function update(Request $request, $id)
     {
         $transaction = Transaction::findOrFail($id);
+
         $validated = $request->validate([
-            'user_id' => 'sometimes|required|exists:users,id',
-            'branch_id' => 'sometimes|required|exists:branches,id',
-            'date' => 'sometimes|required|date',
-            'total' => 'sometimes|required|numeric',
+            'user_id' => 'required|exists:users,id',
+            'branch_id' => 'required|exists:branches,id',
+            'date' => 'required|date',
+            'total' => 'required|numeric',
+            'details' => 'required|array',
+            'details.*.id' => 'nullable|exists:transaction_details,id',
+            'details.*.product_id' => 'required|exists:products,id',
+            'details.*.quantity' => 'required|integer',
+            'details.*.subtotal' => 'required|numeric',
         ]);
 
-        $transaction->update($validated);
-        return $transaction;
+        try {
+            // Begin transaction
+            DB::beginTransaction();
+
+            // Update transaksi utama
+            $transaction->update([
+                'user_id' => $validated['user_id'],
+                'branch_id' => $validated['branch_id'],
+                'date' => $validated['date'],
+                'total' => $validated['total'],
+            ]);
+
+            // Update atau hapus detail transaksi
+            $existingDetailIds = collect($validated['details'])->pluck('id')->filter();
+            TransactionDetail::where('transaction_id', $transaction->id)
+                ->whereNotIn('id', $existingDetailIds)
+                ->delete();
+
+            foreach ($validated['details'] as $detail) {
+                if (isset($detail['id'])) {
+                    // Update existing detail
+                    TransactionDetail::where('id', $detail['id'])->update([
+                        'product_id' => $detail['product_id'],
+                        'quantity' => $detail['quantity'],
+                        'subtotal' => $detail['subtotal'],
+                    ]);
+                } else {
+                    // Create new detail
+                    TransactionDetail::create([
+                        'transaction_id' => $transaction->id,
+                        'product_id' => $detail['product_id'],
+                        'quantity' => $detail['quantity'],
+                        'subtotal' => $detail['subtotal'],
+                    ]);
+                }
+            }
+
+            // Commit transaction
+            DB::commit();
+
+            return redirect()->route('transactions.index')
+                ->with('success', 'Transaction updated successfully.');
+        } catch (\Exception $e) {
+            // Rollback transaction
+            DB::rollBack();
+
+            return redirect()->back()
+                ->withInput()
+                ->withErrors(['error' => 'Failed to update transaction. Please try again.']);
+        }
     }
 
+    /**
+     * Menghapus transaksi beserta semua detailnya.
+     */
     public function destroy($id)
     {
-        $transaction = Transaction::findOrFail($id);
-        $transaction->delete();
-        return response(null, 204);
+        try {
+            // Begin transaction
+            DB::beginTransaction();
+
+            // Hapus detail transaksi terlebih dahulu
+            TransactionDetail::where('transaction_id', $id)->delete();
+
+            // Hapus transaksi utama
+            Transaction::findOrFail($id)->delete();
+
+            // Commit transaction
+            DB::commit();
+
+            return redirect()->route('transactions.index')
+                ->with('success', 'Transaction deleted successfully.');
+        } catch (\Exception $e) {
+            // Rollback transaction
+            DB::rollBack();
+
+            return redirect()->back()
+                ->withErrors(['error' => 'Failed to delete transaction. Please try again.']);
+        }
     }
 }

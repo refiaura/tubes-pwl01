@@ -27,7 +27,7 @@
                     <td>
                         <a href="{{ route('transactions.show', $transaction) }}" class="btn btn-info btn-sm">Details</a>
                         <a href="{{ route('transactions.edit', $transaction) }}" class="btn btn-warning btn-sm">Edit</a>
-                        <form action="{{ route('transactions.destroy', $transaction) }}" method="POST" style="display: inline;">
+                        <form action="{{ route('transactions.destroy', $transaction) }}" method="POST" style="display: inline;" onsubmit="return confirmDelete();">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="btn btn-danger btn-sm">Delete</button>
@@ -37,4 +37,10 @@
             @endforeach
         </tbody>
     </table>
+
+    <script>
+        function confirmDelete() {
+            return confirm("Are you sure you want to delete this transaction?");
+        }
+    </script>
 @endsection

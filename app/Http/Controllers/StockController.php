@@ -62,8 +62,18 @@ class StockController extends Controller
 
     public function destroy($id)
     {
-        $stock = Stock::findOrFail($id);
-        $stock->delete();
-        return response(null, 204);
+        // Cari branch berdasarkan ID
+        $stocks = Stock::find($id);
+
+        // Jika stocks tidak ditemukan, kembalikan respons error
+        if (!$stocks) {
+            return redirect()->route('stocks.index')->with('error', 'stocks not found.');
+        }
+
+        // Hapus stocks
+        $stocks->delete();
+
+        // Redirect ke halaman stocks.index dengan pesan sukses
+        return redirect()->route('stocks.index')->with('success', 'stocks deleted successfully.');
     }
 }

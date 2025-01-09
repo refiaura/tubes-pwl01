@@ -25,12 +25,14 @@
                     <td>{{ $product->price }}</td>
                     <td>{{ $product->category }}</td>
                     <td>
-                        <a href="{{ route('products.edit', $product) }}" class="btn btn-warning btn-sm">Edit</a>
-                        <form action="{{ route('products.destroy', $product) }}" method="POST" style="display: inline;">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
-                        </form>
+                        <div class="d-flex gap-2">
+                            <a href="{{ route('products.edit', $product) }}" class="btn btn-warning btn-sm">Edit</a>
+                            <form action="{{ route('products.destroy', $product->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this products?');">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                            </form>
+                        </div>
                     </td>
                 </tr>
             @endforeach
