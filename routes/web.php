@@ -1,16 +1,16 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-
-Route::get('/', function () {
-    return view('welcome');
-});
-
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\BranchesController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\StockController;
 use App\Http\Controllers\TransactionController;
+
+// Route ke halaman utama (welcome view)
+Route::get('/', function () {
+    return view('welcome');
+});
 
 /*
 |--------------------------------------------------------------------------
@@ -37,3 +37,25 @@ Route::apiResource('stocks', StockController::class);
 
 // Transaction routes
 Route::apiResource('transactions', TransactionController::class);
+
+Route::resource('branches', BranchesController::class);
+Route::resource('products', ProductController::class);
+Route::resource('stocks', StockController::class);
+Route::resource('transactions', TransactionController::class);
+
+// Jika ingin manual route ke specific views untuk branch, product, stock, dan transaction
+// Route::get('/branches', function () {
+//     return view('branches.index');
+// })->name('branches.index');
+
+// Route::get('/products', function () {
+//     return view('products.index');
+// })->name('products.index');
+
+// Route::get('/stocks', function () {
+//     return view('stocks.index');
+// })->name('stocks.index');
+
+// Route::get('/transactions', function () {
+//     return view('transactions.index');
+// })->name('transactions.index');

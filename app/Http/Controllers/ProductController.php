@@ -9,7 +9,10 @@ class ProductController extends Controller
 {
     public function index()
     {
-        return Product::all();
+        $products = Product::all();
+
+        // Kirim data branches ke view
+        return view('products.index', compact('products'));
     }
 
     public function store(Request $request)

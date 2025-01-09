@@ -10,7 +10,11 @@ class TransactionController extends Controller
 {
     public function index()
     {
-        return Transaction::with(['user', 'branch', 'transactionDetails.product'])->get();
+        // Ambil semua transaksi beserta relasi user, branch, dan transactionDetails.product
+        $transactions = Transaction::with(['user', 'branch', 'transactionDetails.product'])->get();
+
+        // Kirim data ke view transactions.index
+        return view('transactions.index', compact('transactions'));
     }
 
     public function store(Request $request)

@@ -9,7 +9,10 @@ class BranchesController extends Controller
 {
     public function index()
     {
-        return Branches::all();
+        $branches = Branches::all();
+
+        // Kirim data branches ke view
+        return view('branches.index', compact('branches'));
     }
 
     public function store(Request $request)

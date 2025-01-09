@@ -9,7 +9,11 @@ class StockController extends Controller
 {
     public function index()
     {
-        return Stock::with(['product', 'branch'])->get();
+        // Ambil semua data stocks dengan relasi product dan branch
+        $stocks = Stock::with(['product', 'branch'])->get();
+
+        // Kirim data ke view stocks.index
+        return view('stocks.index', compact('stocks'));
     }
 
     public function store(Request $request)
