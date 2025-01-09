@@ -6,6 +6,7 @@ use App\Http\Controllers\BranchesController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\StockController;
 use App\Http\Controllers\TransactionController;
+use App\Http\Controllers\TransactionDetailController;
 
 // Route ke halaman utama (welcome view)
 Route::get('/', function () {
@@ -42,6 +43,8 @@ Route::resource('branches', BranchesController::class);
 Route::resource('products', ProductController::class);
 Route::resource('stocks', StockController::class);
 Route::resource('transactions', TransactionController::class);
+Route::get('/transactions/{id}', [TransactionController::class, 'show'])->name('transactions.show');
+// Route::resource('DetailTransactions', TransactionDetailController::class);
 
 // Jika ingin manual route ke specific views untuk branch, product, stock, dan transaction
 // Route::get('/branches', function () {

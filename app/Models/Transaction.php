@@ -29,4 +29,10 @@ class Transaction extends Model
     {
         return $this->hasMany(TransactionDetail::class);
     }
+
+    // Relasi ke TransactionDetail
+    public function details()
+    {
+        return $this->hasMany(TransactionDetail::class);
+    }
 }

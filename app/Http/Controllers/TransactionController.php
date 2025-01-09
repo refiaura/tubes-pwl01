@@ -87,7 +87,12 @@ class TransactionController extends Controller
 
     public function show($id)
     {
-        return Transaction::with(['user', 'branch', 'transactionDetails.product'])->findOrFail($id);
+        // Fetch the transaction with its related details, user, branch, and products
+        $transaction = Transaction::with(['user', 'branch', 'details.product'])
+            ->findOrFail($id);
+
+        // Return the view with transaction data
+        return view('transactions.show', compact('transaction'));
     }
 
     public function update(Request $request, $id)
