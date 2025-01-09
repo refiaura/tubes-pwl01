@@ -43,6 +43,14 @@ class BranchesController extends Controller
         return Branches::findOrFail($id);
     }
 
+    public function edit($id)
+    {
+        $branch = Branches::findOrFail($id);
+
+        // Kirim data branch ke view untuk diedit
+        return view('branches.edit', compact('branch'));
+    }
+
     public function update(Request $request, $id)
     {
         $branch = Branches::findOrFail($id);
@@ -52,13 +60,25 @@ class BranchesController extends Controller
         ]);
 
         $branch->update($validated);
-        return $branch;
+
+        // Redirect ke halaman branches.index dengan pesan sukses
+        return redirect()->route('branches.index')->with('success', 'Branch updated successfully.');
     }
 
     public function destroy($id)
     {
-        $branch = Branches::findOrFail($id);
+        // Cari branch berdasarkan ID
+        $branch = Branches::find($id);
+
+        // Jika branch tidak ditemukan, kembalikan respons error
+        if (!$branch) {
+            return redirect()->route('branches.index')->with('error', 'Branch not found.');
+        }
+
+        // Hapus branch
         $branch->delete();
-        return response(null, 204);
+
+        // Redirect ke halaman branches.index dengan pesan sukses
+        return redirect()->route('branches.index')->with('success', 'Branch deleted successfully.');
     }
 }

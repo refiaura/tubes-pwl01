@@ -21,13 +21,15 @@
                     <td>{{ $branch->name }}</td>
                     <td>{{ $branch->location }}</td>
                     <td>
-                        <a href="{{ route('branches.edit', $branch) }}" class="btn btn-warning btn-sm">Edit</a>
-                        <form action="{{ route('branches.destroy', $branch) }}" method="POST" style="display: inline;">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
-                        </form>
-                    </td>
+                        <div class="d-flex gap-2">
+                            <a href="{{ route('branches.edit', $branch) }}" class="btn btn-warning btn-sm">Edit</a>
+                            <form action="{{ route('branches.destroy', $branch->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this branch?');">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                            </form>
+                        </div>
+                    </td>                    
                 </tr>
             @endforeach
         </tbody>
