@@ -47,17 +47,29 @@ class StockController extends Controller
         return Stock::with(['product', 'branch'])->findOrFail($id);
     }
 
+    public function edit($id)
+    {
+        $stocks = Stock::findOrFail($id);
+        $branches = Branches::all(); // Ambil semua data branch
+        $products = Product::all(); // Ambil semua data product
+
+        // Kirim data stocks ke view untuk diedit
+        return view('stocks.edit', compact('stocks', 'branches', 'products'));
+    }
+
     public function update(Request $request, $id)
     {
-        $stock = Stock::findOrFail($id);
+        $stocks = Stock::findOrFail($id);
         $validated = $request->validate([
             'product_id' => 'sometimes|required|exists:products,id',
             'branch_id' => 'sometimes|required|exists:branches,id',
             'quantity' => 'sometimes|required|integer',
         ]);
 
-        $stock->update($validated);
-        return $stock;
+        $stocks->update($validated);
+
+        // Redirect ke halaman branches.index dengan pesan sukses
+        return redirect()->route('stocks.index')->with('success', 'stocks updated successfully.');
     }
 
     public function destroy($id)

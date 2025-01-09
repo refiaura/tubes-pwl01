@@ -98,7 +98,7 @@ class TransactionController extends Controller
     public function edit($id)
     {
         // Ambil transaksi beserta detailnya
-        $transaction = Transaction::with('transactionDetails')->findOrFail($id);
+        $transaction = Transaction::with('details')->findOrFail($id);
 
         // Data lain yang mungkin dibutuhkan untuk form
         $branches = Branches::all();
@@ -123,12 +123,12 @@ class TransactionController extends Controller
             'details' => 'required|array',
             'details.*.id' => 'nullable|exists:transaction_details,id',
             'details.*.product_id' => 'required|exists:products,id',
-            'details.*.quantity' => 'required|integer',
-            'details.*.subtotal' => 'required|numeric',
+            'details.*.quantity' => 'required|integer|min:1',
+            'details.*.subtotal' => 'required|numeric|min:0',
         ]);
 
         try {
-            // Begin transaction
+            // Mulai transaksi database
             DB::beginTransaction();
 
             // Update transaksi utama
@@ -139,22 +139,26 @@ class TransactionController extends Controller
                 'total' => $validated['total'],
             ]);
 
-            // Update atau hapus detail transaksi
+            // Ambil ID detail transaksi yang sudah ada
             $existingDetailIds = collect($validated['details'])->pluck('id')->filter();
+
+            // Hapus detail transaksi yang tidak ada di input
             TransactionDetail::where('transaction_id', $transaction->id)
                 ->whereNotIn('id', $existingDetailIds)
                 ->delete();
 
+            // Perbarui atau tambahkan detail transaksi
             foreach ($validated['details'] as $detail) {
-                if (isset($detail['id'])) {
-                    // Update existing detail
-                    TransactionDetail::where('id', $detail['id'])->update([
+                if (!empty($detail['id'])) {
+                    // Perbarui detail transaksi yang ada
+                    $transactionDetail = TransactionDetail::find($detail['id']);
+                    $transactionDetail->update([
                         'product_id' => $detail['product_id'],
                         'quantity' => $detail['quantity'],
                         'subtotal' => $detail['subtotal'],
                     ]);
                 } else {
-                    // Create new detail
+                    // Tambahkan detail transaksi baru
                     TransactionDetail::create([
                         'transaction_id' => $transaction->id,
                         'product_id' => $detail['product_id'],
@@ -164,13 +168,13 @@ class TransactionController extends Controller
                 }
             }
 
-            // Commit transaction
+            // Commit transaksi database
             DB::commit();
 
             return redirect()->route('transactions.index')
                 ->with('success', 'Transaction updated successfully.');
         } catch (\Exception $e) {
-            // Rollback transaction
+            // Rollback jika terjadi kesalahan
             DB::rollBack();
 
             return redirect()->back()

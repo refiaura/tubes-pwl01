@@ -43,18 +43,28 @@ class ProductController extends Controller
         return Product::findOrFail($id);
     }
 
+    public function edit($id)
+    {
+        $products = Product::findOrFail($id);
+
+        // Kirim data products ke view untuk diedit
+        return view('products.edit', compact('products'));
+    }
+
     public function update(Request $request, $id)
     {
-        $product = Product::findOrFail($id);
+        $products = Product::findOrFail($id);
         $validated = $request->validate([
             'name' => 'sometimes|required|string',
-            'description' => 'nullable|string',
+            'description' => 'sometimes|nullable|string',
             'price' => 'sometimes|required|numeric',
-            'category' => 'nullable|string',
+            'category' => 'sometimes|nullable|string',
         ]);
 
-        $product->update($validated);
-        return $product;
+        $products->update($validated);
+
+        // Redirect ke halaman branches.index dengan pesan sukses
+        return redirect()->route('products.index')->with('success', 'Products updated successfully.');
     }
 
     public function destroy($id)

@@ -44,6 +44,7 @@ Route::resource('products', ProductController::class);
 Route::resource('stocks', StockController::class);
 Route::resource('transactions', TransactionController::class);
 Route::get('/transactions/{id}', [TransactionController::class, 'show'])->name('transactions.show');
+// Route::get('/products/{id}', [ProductController::class, 'show'])->name('products.show');
 // Route::resource('DetailTransactions', TransactionDetailController::class);
 
 // Jika ingin manual route ke specific views untuk branch, product, stock, dan transaction
