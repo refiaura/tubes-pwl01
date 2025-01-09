@@ -15,6 +15,14 @@ class ProductController extends Controller
         return view('products.index', compact('products'));
     }
 
+    public function create()
+    {
+        $products = Product::all();
+
+        // Kirim data ke view
+        return view('products.create', compact('products'));
+    }
+
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -24,7 +32,10 @@ class ProductController extends Controller
             'category' => 'nullable|string',
         ]);
 
-        return Product::create($validated);
+        Product::create($validated);
+
+        // Redirect ke halaman branches.index dengan pesan sukses
+        return redirect()->route('products.index')->with('success', 'Products created successfully.');
     }
 
     public function show($id)

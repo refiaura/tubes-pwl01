@@ -2,9 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\Models\Transaction;
 use App\Models\TransactionDetail;
+use App\Models\Branches;
+use App\Models\User;
+use App\Models\Product;
 
 class TransactionController extends Controller
 {
@@ -15,6 +19,17 @@ class TransactionController extends Controller
 
         // Kirim data ke view transactions.index
         return view('transactions.index', compact('transactions'));
+    }
+
+    public function create()
+    {
+        $transactions = Transaction::all();
+        $branches = Branches::all();
+        $users = User::all();
+        $products = Product::all();
+
+        // Kirim data ke view
+        return view('transactions.create', compact('transactions', 'branches', 'users', 'products'));
     }
 
     public function store(Request $request)
@@ -30,15 +45,45 @@ class TransactionController extends Controller
             'details.*.subtotal' => 'required|numeric',
         ]);
 
-        $transaction = Transaction::create($validated);
+        try {
+            // Begin transaction
+            DB::beginTransaction();
 
-        foreach ($validated['details'] as $detail) {
-            $detail['transaction_id'] = $transaction->id;
-            TransactionDetail::create($detail);
+            // Create the transaction
+            $transaction = Transaction::create([
+                'user_id' => $validated['user_id'],
+                'branch_id' => $validated['branch_id'],
+                'date' => $validated['date'],
+                'total' => $validated['total'],
+            ]);
+
+            // Create transaction details
+            foreach ($validated['details'] as $detail) {
+                TransactionDetail::create([
+                    'transaction_id' => $transaction->id,
+                    'product_id' => $detail['product_id'],
+                    'quantity' => $detail['quantity'],
+                    'subtotal' => $detail['subtotal'],
+                ]);
+            }
+
+            // Commit transaction
+            DB::commit();
+
+            // Redirect to index with success message
+            return redirect()->route('transactions.index')
+                ->with('success', 'Transaction created successfully.');
+        } catch (\Exception $e) {
+            // Rollback transaction
+            DB::rollBack();
+
+            // Redirect back with input and error message
+            return redirect()->back()
+                ->withInput()
+                ->withErrors(['error' => 'Failed to create transaction. Please try again.']);
         }
-
-        return $transaction->load(['user', 'branch', 'transactionDetails.product']);
     }
+
 
     public function show($id)
     {

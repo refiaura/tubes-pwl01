@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Branches;
+use App\Models\Product;
 use Illuminate\Http\Request;
 use App\Models\Stock;
 
@@ -16,6 +18,16 @@ class StockController extends Controller
         return view('stocks.index', compact('stocks'));
     }
 
+    public function create()
+    {
+        $stocks = Stock::all();
+        $branches = Branches::all();
+        $products = Product::all();
+
+        // Kirim data ke view
+        return view('stocks.create', compact('stocks', 'branches', 'products'));
+    }
+
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -24,7 +36,10 @@ class StockController extends Controller
             'quantity' => 'required|integer',
         ]);
 
-        return Stock::create($validated);
+        Stock::create($validated);
+
+        // Redirect ke halaman branches.index dengan pesan sukses
+        return redirect()->route('stocks.index')->with('success', 'Stokcs created successfully.');
     }
 
     public function show($id)

@@ -23,20 +23,20 @@ Route::get('/', function () {
 |
 */
 
-// User routes
-Route::apiResource('users', UserController::class);
+// // User routes
+// Route::apiResource('users', UserController::class);
 
-// Branch routes
-Route::apiResource('branches', BranchesController::class);
+// // Branch routes
+// Route::apiResource('branches', BranchesController::class);
 
-// Product routes
-Route::apiResource('products', ProductController::class);
+// // Product routes
+// Route::apiResource('products', ProductController::class);
 
-// Stock routes
-Route::apiResource('stocks', StockController::class);
+// // Stock routes
+// Route::apiResource('stocks', StockController::class);
 
-// Transaction routes
-Route::apiResource('transactions', TransactionController::class);
+// // Transaction routes
+// Route::apiResource('transactions', TransactionController::class);
 
 Route::resource('branches', BranchesController::class);
 Route::resource('products', ProductController::class);

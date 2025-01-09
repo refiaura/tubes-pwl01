@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Branches;
+use App\Models\Product;
 
 class BranchesController extends Controller
 {
@@ -15,6 +16,14 @@ class BranchesController extends Controller
         return view('branches.index', compact('branches'));
     }
 
+    public function create()
+    {
+        $products = Product::all();
+
+        // Kirim data ke view
+        return view('branches.create', compact('products'));
+    }
+
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -22,7 +31,11 @@ class BranchesController extends Controller
             'location' => 'required|string',
         ]);
 
-        return Branches::create($validated);
+        // Buat data branch baru
+        Branches::create($validated);
+
+        // Redirect ke halaman branches.index dengan pesan sukses
+        return redirect()->route('branches.index')->with('success', 'Branch created successfully.');
     }
 
     public function show($id)
