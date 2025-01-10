@@ -10,7 +10,6 @@ use App\Models\Product;
 use App\Models\Stock;
 use App\Models\Transaction;
 use App\Models\TransactionDetail;
-use Illuminate\Support\Facades\Hash;
 
 class UserSeeder extends Seeder
 {
@@ -20,9 +19,9 @@ class UserSeeder extends Seeder
     public function run()
     {
         User::create([
-            'name' => 'Admin',
+            'name' => 'Adminnn',
             'email' => 'admin@example.com',
-            'password' => Hash::make('password'),
+            'password' => '12345678', // Plaintext password
             'role' => 'admin',
             'branch_id' => null,
         ]);
@@ -30,7 +29,7 @@ class UserSeeder extends Seeder
         User::create([
             'name' => 'Manager 1',
             'email' => 'manager1@example.com',
-            'password' => Hash::make('password'),
+            'password' => 'password', // Plaintext password
             'role' => 'manager',
             'branch_id' => 1,
         ]);
@@ -38,7 +37,7 @@ class UserSeeder extends Seeder
         User::create([
             'name' => 'Supervisor 1',
             'email' => 'supervisor1@example.com',
-            'password' => Hash::make('password'),
+            'password' => 'password', // Plaintext password
             'role' => 'supervisor',
             'branch_id' => 1,
         ]);
@@ -46,7 +45,7 @@ class UserSeeder extends Seeder
         User::create([
             'name' => 'Cashier 1',
             'email' => 'cashier1@example.com',
-            'password' => Hash::make('password'),
+            'password' => 'password', // Plaintext password
             'role' => 'cashier',
             'branch_id' => 1,
         ]);
@@ -54,7 +53,7 @@ class UserSeeder extends Seeder
         User::create([
             'name' => 'Warehouse Staff 1',
             'email' => 'warehouse1@example.com',
-            'password' => Hash::make('password'),
+            'password' => 'password', // Plaintext password
             'role' => 'warehouse_staff',
             'branch_id' => 1,
         ]);

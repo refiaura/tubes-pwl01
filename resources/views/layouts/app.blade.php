@@ -14,15 +14,34 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav">
+                <ul class="navbar-nav me-auto">
                     <li class="nav-item"><a class="nav-link" href="{{ route('branches.index') }}">Branches</a></li>
                     <li class="nav-item"><a class="nav-link" href="{{ route('products.index') }}">Products</a></li>
                     <li class="nav-item"><a class="nav-link" href="{{ route('stocks.index') }}">Stocks</a></li>
                     <li class="nav-item"><a class="nav-link" href="{{ route('transactions.index') }}">Transactions</a></li>
                 </ul>
+                @auth
+                    <div class="dropdown">
+                        <a class="nav-link dropdown-toggle text-white" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            {{ Auth::user()->name }}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                            <li><a class="dropdown-item" href="#">Profile</a></li>
+                            <li>
+                                <form method="POST" action="{{ route('logout') }}">
+                                    @csrf
+                                    <button class="dropdown-item" type="submit">Logout</button>
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
+                @else
+                    <a class="btn btn-outline-light" href="{{ route('login') }}">Login</a>
+                @endauth
             </div>
         </div>
     </nav>
+    
 
     <div class="container mt-4">
         @yield('content')

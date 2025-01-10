@@ -13,6 +13,28 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('/login', [UserController::class, 'login'])->name('login');
+Route::post('/login', [UserController::class, 'authenticate']);
+Route::post('/logout', [UserController::class, 'logout'])->name('logout');
+
+Route::middleware('auth')->group(function () {
+    Route::resource('users', UserController::class)->except(['create', 'edit']);
+});
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/users', [UserController::class, 'index']);
+    Route::post('/users', [UserController::class, 'store']);
+    Route::get('/users/{id}', [UserController::class, 'show']);
+    Route::put('/users/{id}', [UserController::class, 'update']);
+    Route::delete('/users/{id}', [UserController::class, 'destroy']);
+});
+
+
+Route::resource('branches', BranchesController::class);
+Route::resource('products', ProductController::class);
+Route::resource('stocks', StockController::class);
+Route::resource('transactions', TransactionController::class);
+Route::get('/transactions/{id}', [TransactionController::class, 'show'])->name('transactions.show');
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -39,11 +61,6 @@ Route::get('/', function () {
 // // Transaction routes
 // Route::apiResource('transactions', TransactionController::class);
 
-Route::resource('branches', BranchesController::class);
-Route::resource('products', ProductController::class);
-Route::resource('stocks', StockController::class);
-Route::resource('transactions', TransactionController::class);
-Route::get('/transactions/{id}', [TransactionController::class, 'show'])->name('transactions.show');
 // Route::get('/products/{id}', [ProductController::class, 'show'])->name('products.show');
 // Route::resource('DetailTransactions', TransactionDetailController::class);
 
