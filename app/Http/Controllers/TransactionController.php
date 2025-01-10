@@ -38,7 +38,7 @@ class TransactionController extends Controller
             'user_id' => 'required|exists:users,id',
             'branch_id' => 'required|exists:branches,id',
             'date' => 'required|date',
-            'total' => 'required|numeric',
+            'total' => 'numeric',
             'details' => 'required|array',
             'details.*.product_id' => 'required|exists:products,id',
             'details.*.quantity' => 'required|integer',

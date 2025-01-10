@@ -55,9 +55,10 @@
         </div>
 
         <!-- Total Input -->
+
         <div class="mb-3">
             <label for="total" class="form-label">Total</label>
-            <input type="number" name="total" id="total" class="form-control" value="{{ old('total') }}" required>
+            <input type="number" name="total" id="total" class="form-control" value="{{ old('total') }}" readonly>
             @error('total') <p style="color: red;">{{ $message }}</p> @enderror
         </div>
 
@@ -66,7 +67,7 @@
             <label class="form-label">Transaction Details</label>
             <div id="transaction-details">
                 <!-- Example row for product selection -->
-                <div class="transaction-row mb-3">
+                {{-- <div class="transaction-row mb-3">
                     <div class="row">
                         <div class="col-md-4">
                             <label for="details[0][product_id]" class="form-label">Product</label>
@@ -91,7 +92,7 @@
                             <button type="button" class="btn btn-danger mt-4 remove-row">Remove</button>
                         </div>
                     </div>
-                </div>
+                </div> --}}
             </div>
             <button type="button" id="add-row" class="btn btn-success">Add Product</button>
         </div>
@@ -102,7 +103,7 @@
 
     <script>
         let rowIndex = 1;
-
+    
         // Add new transaction detail row
         document.getElementById('add-row').addEventListener('click', function () {
             const transactionDetails = document.getElementById('transaction-details');
@@ -123,11 +124,11 @@
                     </div>
                     <div class="col-md-3">
                         <label for="details[${rowIndex}][quantity]" class="form-label">Quantity</label>
-                        <input type="number" name="details[${rowIndex}][quantity]" class="form-control" required>
+                        <input type="number" name="details[${rowIndex}][quantity]" class="form-control quantity-input" data-row="${rowIndex}" required>
                     </div>
                     <div class="col-md-3">
                         <label for="details[${rowIndex}][subtotal]" class="form-label">Subtotal</label>
-                        <input type="number" name="details[${rowIndex}][subtotal]" class="form-control" required>
+                        <input type="number" name="details[${rowIndex}][subtotal]" class="form-control subtotal-input" data-row="${rowIndex}" readonly required>
                     </div>
                     <div class="col-md-2">
                         <button type="button" class="btn btn-danger mt-4 remove-row">Remove</button>
@@ -137,12 +138,44 @@
             transactionDetails.appendChild(newRow);
             rowIndex++;
         });
-
+    
         // Remove transaction detail row
         document.addEventListener('click', function (event) {
             if (event.target.classList.contains('remove-row')) {
                 event.target.closest('.transaction-row').remove();
+                updateTotal();
             }
         });
+    
+        // Update subtotal and total dynamically
+        document.addEventListener('input', function (event) {
+            if (event.target.classList.contains('quantity-input')) {
+                const row = event.target.dataset.row;
+                const quantity = parseFloat(event.target.value) || 0;
+                const productSelect = document.querySelector(`select[name="details[${row}][product_id]"]`);
+                const selectedProductId = productSelect.value;
+    
+                let price = 0;
+                @foreach ($products as $product)
+                    if (selectedProductId == {{ $product->id }}) {
+                        price = {{ $product->price }};
+                    }
+                @endforeach
+    
+                const subtotalInput = document.querySelector(`input[name="details[${row}][subtotal]"]`);
+                subtotalInput.value = quantity * price;
+    
+                updateTotal();
+            }
+        });
+    
+        // Calculate and update total
+        function updateTotal() {
+            let total = 0;
+            document.querySelectorAll('.subtotal-input').forEach(function (input) {
+                total += parseFloat(input.value) || 0;
+            });
+            document.getElementById('total').value = total;
+        }
     </script>
 @endsection
