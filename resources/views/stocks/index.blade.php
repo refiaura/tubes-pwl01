@@ -4,7 +4,9 @@
 
 @section('content')
     <h1>Stocks</h1>
+    @if (Auth::check() && (Auth::user()->role === 'manager' || Auth::user()->role === 'supervisor' || Auth::user()->role === 'warehouse_staff'))
     <a href="{{ route('stocks.create') }}" class="btn btn-primary mb-3">Add Stock</a>
+    @endif
     <table class="table table-bordered">
         <thead>
             <tr>
@@ -12,7 +14,9 @@
                 <th>Branch</th>
                 <th>Product</th>
                 <th>Quantity</th>
+                @if (Auth::check() && (Auth::user()->role === 'manager' || Auth::user()->role === 'supervisor' || Auth::user()->role === 'warehouse_staff'))
                 <th>Actions</th>
+                @endif
             </tr>
         </thead>
         <tbody>
@@ -22,6 +26,7 @@
                     <td>{{ $stock->branch->name }}</td>
                     <td>{{ $stock->product->name }}</td>
                     <td>{{ $stock->quantity }}</td>
+                    @if (Auth::check() && (Auth::user()->role === 'manager' || Auth::user()->role === 'supervisor' || Auth::user()->role === 'warehouse_staff'))
                     <td>
                         <div class="d-flex gap-2">
                             <a href="{{ route('stocks.edit', $stock) }}" class="btn btn-warning btn-sm">Edit</a>
@@ -32,6 +37,7 @@
                             </form>
                         </div>
                     </td>
+                @endif
                 </tr>
             @endforeach
         </tbody>
