@@ -4,7 +4,12 @@
 
 @section('content')
     <h1>Branches</h1>
+    @if (Auth::check() && Auth::user()->role === 'admin')
     <a href="{{ route('branches.create') }}" class="btn btn-primary mb-3">Add Branch</a>
+    {{-- <h1>Welcome, Admin!</h1>
+    <p>Anda memiliki akses ke fitur ini.</p> --}}
+    @endif
+    
     <table class="table table-bordered">
         <thead>
             <tr>
