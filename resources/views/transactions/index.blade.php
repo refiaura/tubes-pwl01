@@ -29,7 +29,7 @@
                     <td>{{ $transaction->user->name }}</td>
                     <td>{{ $transaction->date }}</td>
                     <td>{{ $transaction->total }}</td>
-                    @if (Auth::check() && (Auth::user()->role === 'manager' || Auth::user()->role === 'supervisor'))
+                    @if (Auth::check() && (Auth::user()->role === 'cashier'))
                     <td>
                         <a href="{{ route('transactions.show', $transaction) }}" class="btn btn-info btn-sm">Details</a>
                         <a href="{{ route('transactions.edit', $transaction) }}" class="btn btn-warning btn-sm">Edit</a>
@@ -39,7 +39,7 @@
                             <button type="submit" class="btn btn-danger btn-sm">Delete</button>
                         </form>
                     </td>
-                    @elseif (Auth::check() && Auth::user()->role === 'admin')
+                    @elseif (Auth::check() && Auth::user()->role === 'admin' || Auth::user()->role === 'manager' || Auth::user()->role === 'supervisor')
                     <td>
                         <a href="{{ route('transactions.show', $transaction) }}" class="btn btn-info btn-sm">Details</a>
                     </td>

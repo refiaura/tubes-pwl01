@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Product;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class ProductController extends Controller
 {
@@ -82,5 +83,16 @@ class ProductController extends Controller
 
         // Redirect ke halaman Productses.index dengan pesan sukses
         return redirect()->route('products.index')->with('success', 'Products deleted successfully.');
+    }
+
+    public function generateReport()
+    {
+        $products = Product::all();
+
+        // Generate PDF
+        $pdf = Pdf::loadView('products.report', compact('products'));
+
+        // Return PDF as download
+        return $pdf->download('product-report.pdf');
     }
 }

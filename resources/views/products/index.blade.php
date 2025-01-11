@@ -6,7 +6,8 @@
     <h1>Products</h1>
     @if (Auth::check() && (Auth::user()->role === 'manager' || Auth::user()->role === 'supervisor' || Auth::user()->role === 'warehouse_staff'))
                 <a href="{{ route('products.create') }}" class="btn btn-primary mb-3">Add Product</a>
-    @endif
+                <a href="{{ route('products.report') }}" class="btn btn-info btn-sm mb-3">Laporkan</a>
+    @endif  
     <table class="table table-bordered">
         <thead>
             <tr>
@@ -32,16 +33,18 @@
                         <td>
                             <div class="d-flex gap-2">
                                 <a href="{{ route('products.edit', $product) }}" class="btn btn-warning btn-sm">Edit</a>
-                                <form action="{{ route('products.destroy', $product->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this products?');">
+                                <form action="{{ route('products.destroy', $product->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this product?');">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn btn-danger btn-sm">Delete</button>
                                 </form>
+                                <!-- Tombol Laporkan -->
+                                {{-- <a href="{{ route('products.report', $product) }}" class="btn btn-info btn-sm">Laporkan</a> --}}
                             </div>
                         </td>
                     @endif
                 </tr>
             @endforeach
-        </tbody>
+        </tbody>        
     </table>
 @endsection

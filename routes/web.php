@@ -19,6 +19,7 @@ Route::post('/logout', [UserController::class, 'logout'])->name('logout');
 
 Route::middleware('auth')->group(function () {
     Route::resource('users', UserController::class)->except(['create', 'edit']);
+    Route::get('/products/report', [ProductController::class, 'generateReport'])->name('products.report');
 });
 
 Route::middleware('auth:sanctum')->group(function () {
@@ -35,6 +36,9 @@ Route::resource('products', ProductController::class);
 Route::resource('stocks', StockController::class);
 Route::resource('transactions', TransactionController::class);
 Route::get('/transactions/{id}', [TransactionController::class, 'show'])->name('transactions.show');
+
+
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
